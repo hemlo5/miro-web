@@ -238,42 +238,42 @@ export default function Header() {
                 className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] md:hidden"
               />
               <motion.div 
-                initial={{ x: '100%' }}
-                animate={{ x: 0 }}
-                exit={{ x: '100%' }}
+                initial={{ y: '-100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '-100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="fixed right-0 top-0 bottom-0 w-[280px] bg-[#050505] border-l border-white/10 z-[70] md:hidden flex flex-col pt-20 pb-10 px-6"
+                className="fixed left-0 top-0 right-0 bg-white border-b border-black/10 z-[70] md:hidden flex flex-col pt-20 pb-10 px-6 rounded-b-[32px] shadow-2xl"
               >
                 <button 
                   onClick={() => setIsSidebarOpen(false)}
-                  className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white"
+                  className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/5 border border-black/10 flex items-center justify-center text-black"
                 >
                   <X className="w-5 h-5" />
                 </button>
 
                 {/* Profile Section in Sidebar */}
-                <div className="mb-8 p-4 bg-white/5 border border-white/10 rounded-2xl">
+                <div className="mb-8 p-4 bg-black/5 border border-black/5 rounded-2xl">
                   {user ? (
                     <div className="flex flex-col gap-4">
                       <div className="flex items-center gap-3">
                         {avatarUrl ? (
-                          <img src={avatarUrl} alt="Avatar" className="w-12 h-12 rounded-full border border-white/20" />
+                          <img src={avatarUrl} alt="Avatar" className="w-12 h-12 rounded-full border border-black/10" />
                         ) : (
-                          <div className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center font-bold text-lg">
+                          <div className="w-12 h-12 rounded-full bg-black text-white flex items-center justify-center font-bold text-lg">
                             {initial}
                           </div>
                         )}
                         <div className="flex flex-col">
-                          <span className="text-white font-semibold truncate max-w-[160px]">
+                          <span className="text-black font-semibold truncate max-w-[160px]">
                             {user.user_metadata?.full_name || 'User'}
                           </span>
-                          <span className="text-white/40 text-[10px] uppercase tracking-widest">{plan}</span>
+                          <span className="text-black/40 text-[10px] uppercase tracking-widest">{plan}</span>
                         </div>
                       </div>
-                      <div className="h-px bg-white/5 flex-shrink-0" />
+                      <div className="h-px bg-black/5 flex-shrink-0" />
                       <button 
                         onClick={handleSignOut}
-                        className="flex items-center gap-2 text-red-500/80 text-sm font-medium hover:text-red-500 transition-colors"
+                        className="flex items-center gap-2 text-red-600 text-sm font-medium hover:text-red-700 transition-colors"
                       >
                         <LogOut className="w-4 h-4" />
                         Log Out
@@ -285,7 +285,7 @@ export default function Header() {
                         setIsSidebarOpen(false);
                         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                       }}
-                      className="w-full py-3 bg-white text-black rounded-xl font-bold flex items-center justify-center gap-2"
+                      className="w-full py-3 bg-black text-white rounded-xl font-bold flex items-center justify-center gap-2"
                     >
                       <UserIcon className="w-4 h-4" />
                       Sign In
@@ -295,12 +295,12 @@ export default function Header() {
 
                 {/* Nav Links in Sidebar */}
                 <div className="flex flex-col gap-2">
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-white/30 font-bold mb-2 ml-1">More</p>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-black/20 font-bold mb-2 ml-1">More</p>
                   {sidebarNavItems.map((item) => (
                     <Link
                       key={item.path}
                       to={item.path}
-                      className="flex items-center justify-between p-4 rounded-xl hover:bg-white/5 text-white/70 hover:text-white transition-all group"
+                      className="flex items-center justify-between p-4 rounded-xl hover:bg-black/5 text-black/60 hover:text-black transition-all group"
                     >
                       <span className="font-medium">{item.label}</span>
                       <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
@@ -308,12 +308,12 @@ export default function Header() {
                   ))}
                 </div>
 
-                <div className="mt-auto pt-10 border-t border-white/5">
-                  <div className="flex items-center gap-2 text-white/20 mb-1">
+                <div className="mt-8 pt-8 border-t border-black/5">
+                  <div className="flex items-center gap-2 text-black/10 mb-1">
                     <span className="text-[10px] font-bold tracking-tighter italic">HEMLO</span>
-                    <div className="h-px flex-1 bg-white/5" />
+                    <div className="h-px flex-1 bg-black/5" />
                   </div>
-                  <p className="text-white/20 text-[10px]">© 2026 Quantitative Intelligence</p>
+                  <p className="text-black/20 text-[10px]">© 2026 Quantitative Intelligence</p>
                 </div>
               </motion.div>
             </>
