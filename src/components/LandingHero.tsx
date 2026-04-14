@@ -38,11 +38,10 @@ export function LandingHero() {
         />
         <a
           href="https://app.hemloai.com"
-          target="_blank"
           rel="noopener noreferrer"
           className="pointer-events-auto bg-white text-black px-10 py-4 rounded-full font-semibold tracking-wide shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:bg-slate-200 transition-colors hover:scale-105 duration-200 inline-block"
         >
-          Start Analyzing
+          Start Analysing
         </a>
       </div>
 
