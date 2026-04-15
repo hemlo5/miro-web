@@ -66,20 +66,24 @@ export default function Header() {
     try {
       const { data } = await supabase
         .from('profiles')
-        .select('plan')
+        .select('tier, has_starter_pack')
         .eq('id', userId)
         .single();
       
-      if (data && data.plan) {
-        setPlan(data.plan);
+      if (data?.tier) {
+        const tierLabels: Record<string, string> = {
+          'free': 'Free',
+          'normal': 'Free',
+          'premium': 'Pro',
+          'pro': 'Pro',
+          'founder': 'Founder',
+        };
+        setPlan(tierLabels[data.tier] || 'Free');
       } else {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user?.user_metadata?.plan) setPlan(user.user_metadata.plan);
-        else if (user?.app_metadata?.plan) setPlan(user.app_metadata.plan);
-        else setPlan('Standard');
+        setPlan('Free');
       }
     } catch {
-      setPlan('Standard');
+      setPlan('Free');
     }
   };
 
@@ -191,10 +195,10 @@ export default function Header() {
                           </div>
                           <span className="text-xs font-bold text-white/70 uppercase tracking-wider">{plan}</span>
                         </div>
-                        <button className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-colors">
+                        <a href="https://app.hemloai.com/profile" className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-colors">
                           <UserIcon className="w-4 h-4" />
                           Account Settings
-                        </button>
+                        </a>
                         <button 
                           onClick={handleSignOut}
                           className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-500/80 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-colors mt-1"

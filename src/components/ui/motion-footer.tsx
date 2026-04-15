@@ -282,7 +282,7 @@ export function CinematicFooter() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: 'http://localhost:3000/',
+          redirectTo: `${window.location.origin}/`,
           queryParams: {
             prompt: 'select_account',
           }
