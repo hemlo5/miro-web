@@ -99,10 +99,15 @@ export default function Header() {
   const handleGoogleSignIn = async () => {
     setSigningIn(true);
     try {
+      // Determine the app URL dynamically based on environment
+      const appUrl = window.location.hostname === 'localhost' 
+        ? 'http://localhost:8080' 
+        : 'https://app.hemloai.com';
+        
       await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}${location.pathname}`,
+          redirectTo: `${appUrl}/auth/callback?next=${window.location.origin}${location.pathname}`,
           queryParams: { prompt: 'select_account' },
         },
       });
@@ -271,13 +276,6 @@ export default function Header() {
                         <GoogleIcon />
                         {signingIn ? 'Redirecting…' : 'Continue with Google'}
                       </button>
-                      <div className="h-px bg-white/5 my-3" />
-                      <a
-                        href="https://app.hemloai.com/sign-up"
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white/5 border border-white/10 text-white/70 text-sm font-medium rounded-xl hover:bg-white/10 transition-colors"
-                      >
-                        New here? Create account →
-                      </a>
                     </div>
                   )}
                 </motion.div>

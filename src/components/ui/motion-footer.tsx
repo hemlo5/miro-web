@@ -279,10 +279,14 @@ export function CinematicFooter() {
 
   const handleGoogleSignIn = async () => {
     try {
+      const appUrl = window.location.hostname === 'localhost' 
+        ? 'http://localhost:8080' 
+        : 'https://app.hemloai.com';
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/`,
+          redirectTo: `${appUrl}/auth/callback?next=${window.location.origin}/`,
           queryParams: {
             prompt: 'select_account',
           }
@@ -345,18 +349,10 @@ export function CinematicFooter() {
               {/* Sign In Card */}
               <div className="w-full max-w-md bg-white border border-white/20 p-6 md:p-8 rounded-3xl flex flex-col items-center gap-4 relative overflow-hidden group">
                 <div className="w-full relative z-10 flex flex-col gap-4">
-                  <div className="flex flex-col gap-2">
-                    <label className="text-sm font-bold text-black/70 ml-1">Email Address</label>
-                    <input 
-                      type="email" 
-                      placeholder="Enter your email" 
-                      className="w-full bg-black/5 border border-black/10 rounded-2xl px-5 py-4 text-black placeholder:text-black/40 focus:outline-none focus:border-black/30 focus:ring-1 focus:ring-black/30 transition-all font-medium" 
-                    />
-                  </div>
                   <MagneticButton 
                     as="button" 
                     onClick={handleGoogleSignIn}
-                    className="w-full bg-black text-white hover:bg-black/80 font-bold py-4 rounded-2xl transition-colors mt-2 text-base flex items-center justify-center gap-3"
+                    className="w-full bg-black text-white hover:bg-black/80 font-bold py-4 rounded-2xl transition-colors text-base flex items-center justify-center gap-3"
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
