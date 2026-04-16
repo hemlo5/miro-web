@@ -24,24 +24,37 @@ const sidebarNavItems = [
   { path: '/founders', label: 'Founders' },
 ];
 
+// Google SVG icon
+const GoogleIcon = () => (
+  <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none">
+    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+  </svg>
+);
+
 export default function Header() {
   const location = useLocation();
   const [user, setUser] = useState<User | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [plan, setPlan] = useState<string>('Standard');
+  const [plan, setPlan] = useState<string>('Free');
+  const [signingIn, setSigningIn] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // On mount, check for any existing session (including one from a redirect)
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (session?.user) fetchUserPlan(session.user.id);
     });
 
+    // Listen for auth state changes (e.g., sign in, sign out, token refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) fetchUserPlan(session.user.id);
-      else setPlan('Standard');
+      else setPlan('Free');
     });
 
     return () => subscription.unsubscribe();
@@ -53,8 +66,8 @@ export default function Header() {
         setIsDropdownOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // Close sidebar on path change
@@ -63,27 +76,39 @@ export default function Header() {
   }, [location.pathname]);
 
   const fetchUserPlan = async (userId: string) => {
-    try {
-      const { data } = await supabase
-        .from('profiles')
-        .select('tier, has_starter_pack')
-        .eq('id', userId)
-        .single();
-      
-      if (data?.tier) {
-        const tierLabels: Record<string, string> = {
-          'free': 'Free',
-          'normal': 'Free',
-          'premium': 'Pro',
-          'pro': 'Pro',
-          'founder': 'Founder',
-        };
-        setPlan(tierLabels[data.tier] || 'Free');
-      } else {
-        setPlan('Free');
-      }
-    } catch {
+    const { data } = await supabase
+      .from('profiles')
+      .select('tier, has_starter_pack')
+      .eq('id', userId)
+      .single();
+
+    if (data?.tier) {
+      const tierLabels: Record<string, string> = {
+        'free': 'Free',
+        'normal': 'Free',
+        'premium': 'Pro',
+        'pro': 'Pro',
+        'founder': 'Founder',
+      };
+      setPlan(tierLabels[data.tier] ?? 'Free');
+    } else {
       setPlan('Free');
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setSigningIn(true);
+    try {
+      await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}${location.pathname}`,
+          queryParams: { prompt: 'select_account' },
+        },
+      });
+    } catch (err) {
+      console.error('Sign in error:', err);
+      setSigningIn(false);
     }
   };
 
@@ -94,11 +119,13 @@ export default function Header() {
   };
 
   const avatarUrl = user?.user_metadata?.avatar_url;
-  const initial = user?.email ? user.email.charAt(0).toUpperCase() : '?';
+  const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
+  const initial = displayName.charAt(0).toUpperCase();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-md border-b border-white/10">
       <div className="max-w-7xl mx-auto flex items-center justify-center px-4 py-3 relative min-h-[64px]">
+
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1 sm:gap-2 max-w-full overflow-x-auto scrollbar-hide">
           {desktopNavItems.map((item) => {
@@ -149,80 +176,117 @@ export default function Header() {
           })}
         </nav>
 
-        {/* Right Corner - Desktop Profile / Mobile Hamburger */}
+        {/* Right Corner */}
         <div className="absolute right-4 md:right-8 flex items-center gap-2">
-          {/* Desktop User Profile */}
-          <div className="hidden md:block" ref={dropdownRef}>
-            {user ? (
-              <div className="relative">
-                <button 
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center gap-3 hover:bg-white/5 rounded-full p-1 pr-3 transition-colors outline-none"
-                >
-                  <div className="text-right hidden sm:block">
-                    <div className="text-white text-sm font-medium leading-none mb-1">
-                      {user.user_metadata?.full_name || 'User'}
-                    </div>
-                    <div className="text-white/50 text-[10px] uppercase tracking-widest">{plan}</div>
-                  </div>
-                  {avatarUrl ? (
-                    <img 
-                      src={avatarUrl} 
-                      alt="Profile" 
-                      className="w-10 h-10 rounded-full border border-white/20 object-cover"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-bold text-sm">
-                      {initial}
-                    </div>
-                  )}
-                </button>
 
-                <AnimatePresence>
-                  {isDropdownOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      transition={{ duration: 0.15, ease: "easeOut" }}
-                      className="absolute right-0 top-full mt-2 w-56 bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden py-2 z-50 transform origin-top-right"
-                    >
-                      <div className="px-2">
-                        <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-white/5 mb-2">
-                          <div className="flex items-center gap-2">
-                            <Crown className="w-4 h-4 text-yellow-500" />
-                            <span className="text-sm font-medium text-white">Current Plan</span>
-                          </div>
-                          <span className="text-xs font-bold text-white/70 uppercase tracking-wider">{plan}</span>
+          {/* Desktop: Profile OR Sign-In Dropdown */}
+          <div className="hidden md:block" ref={dropdownRef}>
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center gap-3 hover:bg-white/5 rounded-full p-1 pr-3 transition-colors outline-none"
+            >
+              {user && (
+                <div className="text-right hidden sm:block">
+                  <div className="text-white text-sm font-medium leading-none mb-1">{displayName}</div>
+                  <div className="text-white/50 text-[10px] uppercase tracking-widest">{plan}</div>
+                </div>
+              )}
+              {user && avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt="Profile"
+                  className="w-10 h-10 rounded-full border border-white/20 object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full border border-white/20 bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
+                  {user
+                    ? <span className="text-white font-bold text-sm">{initial}</span>
+                    : <UserIcon className="w-5 h-5 text-white/70" />
+                  }
+                </div>
+              )}
+            </button>
+
+            <AnimatePresence>
+              {isDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
+                  className="absolute right-0 top-full mt-2 w-64 bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden py-2 z-50 transform origin-top-right"
+                >
+                  {user ? (
+                    /* ─── LOGGED IN ─── */
+                    <div className="px-2">
+                      {/* User Info */}
+                      <div className="flex items-center gap-3 px-3 py-3 mb-1">
+                        {avatarUrl ? (
+                          <img src={avatarUrl} alt="avatar" className="w-10 h-10 rounded-full border border-white/10 object-cover" />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-bold text-sm shrink-0">{initial}</div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-white text-sm font-semibold truncate">{displayName}</p>
+                          <p className="text-white/40 text-xs truncate">{user.email}</p>
                         </div>
-                        <a href="https://app.hemloai.com/profile" className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-colors">
-                          <UserIcon className="w-4 h-4" />
-                          Account Settings
-                        </a>
-                        <button 
-                          onClick={handleSignOut}
-                          className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-500/80 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-colors mt-1"
-                        >
-                          <LogOut className="w-4 h-4" />
-                          Sign Out
-                        </button>
                       </div>
-                    </motion.div>
+
+                      <div className="h-px bg-white/5 mx-2 mb-2" />
+
+                      {/* Plan Badge */}
+                      <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-white/5 mb-2">
+                        <div className="flex items-center gap-2">
+                          <Crown className="w-4 h-4 text-yellow-500" />
+                          <span className="text-sm font-medium text-white">Current Plan</span>
+                        </div>
+                        <span className="text-xs font-bold text-white/70 uppercase tracking-wider">{plan}</span>
+                      </div>
+
+                      <a
+                        href="https://app.hemloai.com/profile"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
+                      >
+                        <UserIcon className="w-4 h-4" />
+                        Account Settings
+                      </a>
+
+                      <button
+                        onClick={handleSignOut}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-500/80 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-colors mt-1"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                      </button>
+                    </div>
+                  ) : (
+                    /* ─── NOT LOGGED IN ─── */
+                    <div className="px-3 py-3">
+                      <p className="text-white/40 text-xs mb-3 text-center">Sign in to see your plan & profile</p>
+                      <button
+                        onClick={handleGoogleSignIn}
+                        disabled={signingIn}
+                        className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white text-black text-sm font-semibold rounded-xl hover:bg-white/90 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        <GoogleIcon />
+                        {signingIn ? 'Redirecting…' : 'Continue with Google'}
+                      </button>
+                      <div className="h-px bg-white/5 my-3" />
+                      <a
+                        href="https://app.hemloai.com/sign-up"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white/5 border border-white/10 text-white/70 text-sm font-medium rounded-xl hover:bg-white/10 transition-colors"
+                      >
+                        New here? Create account →
+                      </a>
+                    </div>
                   )}
-                </AnimatePresence>
-              </div>
-            ) : (
-              <button 
-                onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}
-                className="w-10 h-10 rounded-full border border-white/20 bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
-              >
-                <UserIcon className="w-5 h-5 text-white/70" />
-              </button>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Mobile Hamburger Button */}
-          <button 
+          <button
             onClick={() => setIsSidebarOpen(true)}
             className="md:hidden w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white active:scale-90 transition-transform"
           >
@@ -234,21 +298,21 @@ export default function Header() {
         <AnimatePresence>
           {isSidebarOpen && (
             <>
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setIsSidebarOpen(false)}
                 className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] md:hidden"
               />
-              <motion.div 
+              <motion.div
                 initial={{ y: '-100%' }}
                 animate={{ y: 0 }}
                 exit={{ y: '-100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                 className="fixed left-0 top-0 right-0 bg-white border-b border-black/10 z-[70] md:hidden flex flex-col pt-20 pb-10 px-6 rounded-b-[32px] shadow-2xl"
               >
-                <button 
+                <button
                   onClick={() => setIsSidebarOpen(false)}
                   className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/5 border border-black/10 flex items-center justify-center text-black"
                 >
@@ -268,14 +332,12 @@ export default function Header() {
                           </div>
                         )}
                         <div className="flex flex-col">
-                          <span className="text-black font-semibold truncate max-w-[160px]">
-                            {user.user_metadata?.full_name || 'User'}
-                          </span>
+                          <span className="text-black font-semibold truncate max-w-[160px]">{displayName}</span>
                           <span className="text-black/40 text-[10px] uppercase tracking-widest">{plan}</span>
                         </div>
                       </div>
                       <div className="h-px bg-black/5 flex-shrink-0" />
-                      <button 
+                      <button
                         onClick={handleSignOut}
                         className="flex items-center gap-2 text-red-600 text-sm font-medium hover:text-red-700 transition-colors"
                       >
@@ -284,15 +346,13 @@ export default function Header() {
                       </button>
                     </div>
                   ) : (
-                    <button 
-                      onClick={() => {
-                        setIsSidebarOpen(false);
-                        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                      }}
-                      className="w-full py-3 bg-black text-white rounded-xl font-bold flex items-center justify-center gap-2"
+                    <button
+                      onClick={handleGoogleSignIn}
+                      disabled={signingIn}
+                      className="w-full py-3 bg-black text-white rounded-xl font-bold flex items-center justify-center gap-2 disabled:opacity-60"
                     >
-                      <UserIcon className="w-4 h-4" />
-                      Sign In
+                      <GoogleIcon />
+                      {signingIn ? 'Redirecting…' : 'Sign in with Google'}
                     </button>
                   )}
                 </div>
