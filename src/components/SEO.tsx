@@ -7,8 +7,8 @@ interface SEOProps {
 }
 
 export function SEO({ 
-  title = "Hemlo | Quantitative Intelligence Platform", 
-  description = "Hemlo replaces single-prompt AI guesswork with structured, multi-agent consensus — purpose-built for analysts, traders, and strategists who need to be right.", 
+  title = "HEMLO", 
+  description = "HEMLO is an AI automation agent and algorithmic market simulation platform that allows users to predict future scenarios.", 
   path = "" 
 }: SEOProps) {
   const url = `https://hemloai.com${path}`;
