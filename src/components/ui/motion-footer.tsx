@@ -324,7 +324,7 @@ export function CinematicFooter() {
             ref={giantTextRef}
             className="footer-giant-bg-text absolute -bottom-[5vh] left-1/2 -translate-x-1/2 whitespace-nowrap z-0 pointer-events-none select-none"
           >
-            Hemlo
+            HEMLO
           </div>
 
           {/* 1. Diagonal Sleek Marquee (Top of footer) */}
