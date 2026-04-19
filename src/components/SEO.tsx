@@ -7,7 +7,7 @@ interface SEOProps {
 }
 
 export function SEO({ 
-  title = "HEMLO | Quantitative Intelligence Platform", 
+  title = "Hemlo | Quantitative Intelligence Platform", 
   description = "Hemlo replaces single-prompt AI guesswork with structured, multi-agent consensus — purpose-built for analysts, traders, and strategists who need to be right.", 
   path = "" 
 }: SEOProps) {

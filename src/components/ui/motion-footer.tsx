@@ -324,7 +324,7 @@ export function CinematicFooter() {
             ref={giantTextRef}
             className="footer-giant-bg-text absolute -bottom-[5vh] left-1/2 -translate-x-1/2 whitespace-nowrap z-0 pointer-events-none select-none"
           >
-            HEMLO
+            Hemlo
           </div>
 
           {/* 1. Diagonal Sleek Marquee (Top of footer) */}
@@ -339,10 +339,15 @@ export function CinematicFooter() {
           <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 mt-12 w-full max-w-5xl mx-auto">
             <h2
               ref={headingRef}
-              className="text-4xl md:text-6xl font-black footer-text-glow tracking-tighter mb-6 text-center"
+              className="text-4xl md:text-6xl font-black footer-text-glow tracking-tighter mb-4 text-center"
             >
               Ready to begin?
             </h2>
+
+            {/* Application Purpose Required for Google OAuth Consent Screen Verification */}
+            <p className="max-w-2xl text-center text-muted-foreground text-sm md:text-base leading-relaxed mb-8">
+              Hemlo is an advanced quantitative intelligence platform that empowers analysts, traders, and strategists to rigorously simulate future events. By securely authenticating via your Google account, you gain access to our custom multi-agent simulation engine. You can define complex global scenarios, analyze real-time data from breaking news and prediction markets, and orchestrate independent AI agents to dynamically debate and forecast probabilistic outcomes without relying on single-prompt guesswork.
+            </p>
 
             {/* Interactive Magnetic Pills Layout */}
             <div ref={linksRef} className="flex flex-col items-center gap-4 w-full">

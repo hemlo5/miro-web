@@ -27,7 +27,7 @@ export function LandingHero() {
 
       <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center text-center px-6 text-white z-10">
         <h1 className="font-sans text-6xl md:text-8xl lg:text-9xl tracking-tight font-bold mb-6 drop-shadow-[0_0_30px_rgba(0,0,0,0.9)]">
-          HEMLO
+          Hemlo
         </h1>
         <TextGlitch
           text="A Peek Into Future"
