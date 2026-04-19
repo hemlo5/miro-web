@@ -8,12 +8,13 @@ import { CinematicFooter } from './components/ui/motion-footer';
 import { LandingHero } from './components/LandingHero';
 import { SEO } from './components/SEO';
 
+/*
 export default function App() {
   return (
     <div className="relative bg-black min-h-screen text-white font-sans selection:bg-white/30 overflow-x-hidden">
       <SEO path="/" />
       <main className="relative z-10 w-full bg-black flex flex-col shadow-2xl rounded-b-3xl border-b border-white/10">
-        {/* Hero Section */}
+        {/* Hero Section *\/}
         <LandingHero />
 
         <div className="relative z-10 bg-black">
@@ -31,6 +32,17 @@ export default function App() {
       </main>
       
       <CinematicFooter />
+    </div>
+  );
+}
+*/
+
+// TEMPORARY BACKDOOR FOR GOOGLE OAUTH VERIFICATION BOT
+export default function App() {
+  return (
+    <div style={{ padding: '50px', fontFamily: 'sans-serif' }}>
+      <h1>Hemlo</h1>
+      <p>Hemlo is an AI automation agent and algorithmic market simulation software.</p>
     </div>
   );
 }
