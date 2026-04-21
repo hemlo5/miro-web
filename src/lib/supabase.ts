@@ -9,16 +9,22 @@ import { createBrowserClient } from '@supabase/ssr';
 
 const isProd = typeof window !== 'undefined' && window.location.hostname.includes('hemloai.com');
 
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+// During build time (prerendering), if these are missing, we provide a placeholder
+// to prevent the build from crashing. The actual client logic (useEffect)
+// will only fire in the browser where variables should be defined.
 export const supabase = createBrowserClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseAnonKey || 'placeholder',
   {
     cookieOptions: {
       ...(isProd
         ? { domain: '.hemloai.com', secure: true }
-        : {}), // localhost: no domain restriction, works normally
+        : {}),
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 365, // 1 year
+      maxAge: 60 * 60 * 24 * 365,
     },
   }
 );
