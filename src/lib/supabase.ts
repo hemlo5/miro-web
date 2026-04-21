@@ -10,8 +10,8 @@ import { createBrowserClient } from '@supabase/ssr';
 const isProd = typeof window !== 'undefined' && window.location.hostname.includes('hemloai.com');
 
 export const supabase = createBrowserClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY,
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   {
     cookieOptions: {
       ...(isProd

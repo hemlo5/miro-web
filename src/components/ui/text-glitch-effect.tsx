@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef, useState } from "react"
 
 interface TextGlitchProps {
@@ -9,7 +11,8 @@ interface TextGlitchProps {
 }
 
 export function TextGlitch({ text, hoverText, className = "", delay = 0, as: Tag = "p" }: TextGlitchProps) {
-  const textRef = useRef<HTMLElement>(null)
+  // Use a broader ref type to avoid the mismatch with the polymorphic dynamic tag
+  const textRef = useRef<HTMLElement | null>(null)
   const spanRef = useRef<HTMLSpanElement>(null)
   const [displayText] = useState(text)
   const [displayHoverText, setDisplayHoverText] = useState(hoverText || text)
@@ -72,9 +75,11 @@ export function TextGlitch({ text, hoverText, className = "", delay = 0, as: Tag
     }
   }, [])
 
+  // Cast to any to allow the dynamic Tag + broader ref type
+  const El = Tag as any;
+
   return (
-    // @ts-ignore — dynamic tag
-    <Tag
+    <El
       ref={textRef}
       className={`relative inline-block cursor-pointer overflow-hidden ${className}`}
       onMouseEnter={handleMouseEnter}
@@ -92,6 +97,6 @@ export function TextGlitch({ text, hoverText, className = "", delay = 0, as: Tag
           {displayHoverText}
         </span>
       )}
-    </Tag>
+    </El>
   )
 }

@@ -1,3 +1,5 @@
+'use client';
+
 import { Card, CardContent, CardHeader } from '../ui/card'
 import { cn } from '../../lib/utils'
 import { Activity, LucideIcon, Network, ScanSearch, BarChart2, Globe, FileText } from 'lucide-react'

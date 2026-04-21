@@ -1,3 +1,5 @@
+'use client';
+
 import InfiniteGallery from "./ui/3d-gallery-photography";
 import { heroImages } from "../data/hero-images";
 import { TextGlitch } from "./ui/text-glitch-effect";

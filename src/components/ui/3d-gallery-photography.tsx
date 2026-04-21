@@ -1,3 +1,5 @@
+'use client';
+
 import type React from 'react';
 import { useRef, useMemo, useCallback, useState, useEffect } from 'react';
 import { Suspense } from 'react';

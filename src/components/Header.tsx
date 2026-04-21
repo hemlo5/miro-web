@@ -1,4 +1,7 @@
-import { Link, useLocation } from 'react-router-dom';
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../lib/supabase';
@@ -35,7 +38,7 @@ const GoogleIcon = () => (
 );
 
 export default function Header() {
-  const location = useLocation();
+  const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -73,7 +76,7 @@ export default function Header() {
   // Close sidebar on path change
   useEffect(() => {
     setIsSidebarOpen(false);
-  }, [location.pathname]);
+  }, [pathname]);
 
   const fetchUserPlan = async (userId: string) => {
     const { data } = await supabase
@@ -107,7 +110,7 @@ export default function Header() {
       await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${appUrl}/auth/callback?next=${window.location.origin}${location.pathname}`,
+          redirectTo: `${appUrl}/auth/callback?next=${window.location.origin}${pathname}`,
           queryParams: { prompt: 'select_account' },
         },
       });
@@ -134,11 +137,11 @@ export default function Header() {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1 sm:gap-2 max-w-full overflow-x-auto scrollbar-hide">
           {desktopNavItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            const isActive = pathname === item.path;
             return (
               <Link
                 key={item.path}
-                to={item.path}
+                href={item.path}
                 className={`relative px-4 py-2 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap rounded-full ${
                   isActive ? 'text-black' : 'text-white/70 hover:text-white'
                 }`}
@@ -159,11 +162,11 @@ export default function Header() {
         {/* Mobile Navigation (3 Items) */}
         <nav className="flex md:hidden items-center gap-1 max-w-full overflow-x-auto scrollbar-hide bg-white/5 border border-white/10 rounded-full px-1 py-1">
           {mobileNavItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            const isActive = pathname === item.path;
             return (
               <Link
                 key={item.path}
-                to={item.path}
+                href={item.path}
                 className={`relative px-4 py-1.5 text-xs font-medium transition-colors whitespace-nowrap rounded-full ${
                   isActive ? 'text-black' : 'text-white/70 hover:text-white'
                 }`}
@@ -358,10 +361,10 @@ export default function Header() {
                 {/* Nav Links in Sidebar */}
                 <div className="flex flex-col gap-2">
                   <p className="text-[10px] uppercase tracking-[0.2em] text-black/20 font-bold mb-2 ml-1">More</p>
-                  {sidebarNavItems.map((item) => (
+                {sidebarNavItems.map((item) => (
                     <Link
                       key={item.path}
-                      to={item.path}
+                      href={item.path}
                       className="flex items-center justify-between p-4 rounded-xl hover:bg-black/5 text-black/60 hover:text-black transition-all group"
                     >
                       <span className="font-medium">{item.label}</span>
