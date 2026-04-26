@@ -96,7 +96,7 @@ export default function PricingClient() {
                 {owned ? (
                   <div className={`w-full py-3 text-center text-sm font-semibold border mb-8 opacity-50 cursor-default ${plan.highlight ? 'border-black/20 text-black' : 'border-white/10 text-white'}`}>{getLabel(plan)}</div>
                 ) : plan.id === 'free' ? (
-                  <a href={user ? 'https://app.hemloai.com/home' : 'https://app.hemloai.com/sign-up'} className="w-full py-3 text-center text-sm font-semibold transition-all duration-200 mb-8 inline-block active:scale-95 bg-transparent border border-white/20 hover:bg-white/5 text-white">
+                  <a href={user ? 'https://app.hemloai.com/polymarket' : 'https://app.hemloai.com/sign-up'} className="w-full py-3 text-center text-sm font-semibold transition-all duration-200 mb-8 inline-block active:scale-95 bg-transparent border border-white/20 hover:bg-white/5 text-white">
                     {user ? 'Go to Dashboard' : 'Get Started'}
                   </a>
                 ) : (

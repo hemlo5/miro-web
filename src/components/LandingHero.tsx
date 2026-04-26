@@ -39,7 +39,7 @@ export function LandingHero() {
           className="pointer-events-auto text-xl md:text-3xl text-white opacity-100 max-w-2xl font-bold tracking-wide drop-shadow-[0_0_20px_rgba(0,0,0,0.9)] mb-10"
         />
         <a
-          href="https://app.hemloai.com"
+          href="https://app.hemloai.com/polymarket"
           rel="noopener noreferrer"
           className="pointer-events-auto bg-white text-black px-10 py-4 rounded-full font-semibold tracking-wide shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:bg-slate-200 transition-colors hover:scale-105 duration-200 inline-block"
         >
